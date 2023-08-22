@@ -12,11 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     Optional<User> findByRecommendationCode(RecommendationCode recommendationCode);
 
     Optional<User> findById(Long id);
+
+    List<User> findByIdIn(List<Long> ids);
 
     @Query(value = "SELECT f.user FROM Friend f WHERE f.friendUser.id = :userId")
     List<User> findAllAddedMeAsFriendByUserId(@Param("userId") Long id);

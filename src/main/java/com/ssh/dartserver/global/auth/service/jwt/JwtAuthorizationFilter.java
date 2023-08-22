@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.ssh.dartserver.domain.user.domain.User;
 import com.ssh.dartserver.domain.user.infra.UserRepository;
 import com.ssh.dartserver.global.auth.service.oauth.PrincipalDetails;
+import com.ssh.dartserver.global.error.CertificationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,19 +37,22 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String token = request.getHeader(JwtProperties.HEADER_STRING.getValue()).replace(JwtProperties.TOKEN_PREFIX.getValue(), "");
+
         String username = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET.getValue())).build().verify(token)
                 .getClaim("username").asString();
 
-        if (username != null) {
-            User user = userRepository.findByUsername(username);
-
-            PrincipalDetails principalDetails = new PrincipalDetails(user);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails,
-                    null,
-                    principalDetails.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (username == null) {
+            throw new CertificationException("유효하지 않은 토큰입니다.");
         }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CertificationException("존재하지 않는 유저입니다."));
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails,
+                null,
+                principalDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);
     }
