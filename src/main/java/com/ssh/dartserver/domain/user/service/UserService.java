@@ -19,7 +19,6 @@ import com.ssh.dartserver.domain.user.dto.mapper.UserMapper;
 import com.ssh.dartserver.domain.user.infra.ProfileQuestionRepository;
 import com.ssh.dartserver.domain.user.infra.UserRepository;
 import com.ssh.dartserver.domain.vote.domain.Vote;
-import com.ssh.dartserver.domain.vote.infra.CandidateRepository;
 import com.ssh.dartserver.domain.vote.infra.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,6 @@ public class UserService {
     private final FriendRepository friendRepository;
     private final VoteRepository voteRepository;
     private final ProfileQuestionRepository profileQuestionRepository;
-    private final CandidateRepository candidateRepository;
 
     private final UserMapper userMapper;
     private final UniversityMapper universityMapper;
@@ -52,15 +50,17 @@ public class UserService {
     private final QuestionMapper questionMapper;
 
     @Transactional
-    public Long signup(User user, UserSignupRequest userSignupRequest) {
+    public UserProfileResponse signup(User user, UserSignupRequest userSignupRequest) {
         user.signup(
                 getPersonalInfo(userSignupRequest),
                 getUniversity(userSignupRequest.getUniversityId()),
                 randomGenerator,
                 Point.from(DEFAULT_POINT)
         );
-        User savedUser = userRepository.save(user);
-        return savedUser.getId();
+        userRepository.save(user);
+        List<ProfileQuestion> profileQuestions = profileQuestionRepository.findAllByUser(user);
+
+        return getUserProfileResponse(user, profileQuestions);
     }
 
 
@@ -102,29 +102,17 @@ public class UserService {
 
         profileQuestionRepository.deleteAllByUser(user);
         profileQuestionRepository.saveAll(profileQuestions);
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
-        return getUserProfileResponse(savedUser, profileQuestions);
+        return getUserProfileResponse(user, profileQuestions);
     }
 
     @Transactional
     public void delete(User user) {
-        //내가 Friend 테이블에서 User이거나 친구이거나 테이블에서 삭제
-        friendRepository.deleteAllByUserOrFriendUser(user, user);
-
-        //내가 투표를 받은 유저인 경우: 투표 테이블 삭제 + 후보 데이터 관련 투표 모두 삭제
-        List<Vote> pickedUserVotes = voteRepository.findAllByPickedUser(user);
-        candidateRepository.deleteAllByVoteIn(pickedUserVotes);
-        voteRepository.deleteAll(pickedUserVotes);
-
-        //내가 투표를 한 유저인 경우: 투표에 pickingUser 데이터 null
-        voteRepository.findAllByPickingUser(user)
-                .forEach(vote -> vote.updatePickingUser(null));
-
-        //내가 후보인데 투표 받은 건 아닐 경우:  null
-        candidateRepository.findAllByUser(user)
-                        .forEach(candidate -> candidate.updateUser(null));
-
+        friendRepository.deleteAllByUserIdOrFriendUserId(user.getId(), user.getId());
+        voteRepository.deleteAllByPickedUserId(user.getId());
+        voteRepository.findAllByPickingUserId(user.getId())
+                .forEach(vote -> vote.updateUser(null));
         userRepository.delete(user);
     }
 

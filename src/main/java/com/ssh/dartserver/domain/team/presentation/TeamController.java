@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,12 +27,7 @@ public class TeamController {
     @PostMapping
     public ResponseEntity<TeamResponse> createTeam(Authentication authentication, @Valid @RequestBody TeamRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Long teamId = myTeamService.createTeam(principal.getUser(), request);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(teamId)
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.ok(myTeamService.createTeam(principal.getUser(), request));
     }
 
     @GetMapping("/count")

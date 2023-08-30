@@ -37,6 +37,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### Enviorment ###
+*.yml
+
 ### VCS ###
 .github/
 
@@ -44,4 +47,4 @@ out/
 src/main/resources/*.yml
 
 ### Seed ###
-src/main/resources/db/seed/
+src/main/resources/db/seed

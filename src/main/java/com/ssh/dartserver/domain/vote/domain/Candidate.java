@@ -27,8 +27,4 @@ public class Candidate {
         this.vote = vote;
         this.user = user;
     }
-
-    public void updateUser(Object o) {
-        this.user = (User) o;
-    }
 }

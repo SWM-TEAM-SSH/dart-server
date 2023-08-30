@@ -3,16 +3,16 @@ package com.ssh.dartserver.domain.vote.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 @Embeddable
 @NoArgsConstructor
 @Getter
 public class Candidates {
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote")
     private List<Candidate> values;
-
     public Candidates(List<Candidate> values) {
         validateCandidatesSize(values);
         this.values = values;

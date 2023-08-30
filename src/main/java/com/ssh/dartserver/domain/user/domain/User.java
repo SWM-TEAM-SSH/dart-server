@@ -55,7 +55,8 @@ public class User extends BaseTimeEntity {
     private String providerId;
     private String provider;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //TODO: 즉시 로딩 수정 필요
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "university_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private University university;
 
