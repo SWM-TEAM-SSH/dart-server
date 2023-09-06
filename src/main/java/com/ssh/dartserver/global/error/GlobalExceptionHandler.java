@@ -47,9 +47,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleCertificationException(CertificationException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
-
-    @ExceptionHandler(TeamNotFoundException.class)
-    public ResponseEntity<String> handleTeamNotFoundException(TeamNotFoundException ex) {
-        return ResponseEntity.notFound().build();
-    }
 }

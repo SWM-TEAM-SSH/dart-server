@@ -8,7 +8,6 @@ import com.ssh.dartserver.domain.user.domain.recommendcode.RecommendationCode;
 import com.ssh.dartserver.domain.user.domain.studentverificationinfo.StudentVerificationInfo;
 import com.ssh.dartserver.global.common.BaseTimeEntity;
 import com.ssh.dartserver.global.common.Role;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -85,10 +84,4 @@ public class User extends BaseTimeEntity {
         this.point = this.point.add(value);
     }
 
-    public String getNicknameOrElseName() {
-        if (!Objects.equals(this.getPersonalInfo().getNickname().getValue(), "DEFAULT")) {
-            return this.getPersonalInfo().getNickname().getValue();
-        }
-        return this.getPersonalInfo().getName().getValue();
-    }
 }

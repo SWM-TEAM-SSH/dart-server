@@ -31,9 +31,5 @@ public class StudentVerificationInfo {
     public void updateStudentIdCardImageUrl(String value) {
         this.studentIdCardImageUrl = StudentIdCardImageUrl.from(value);
     }
-
-    public boolean isCertified() {
-        return this.studentIdCardVerificationStatus.isVerificationSuccess();
-    }
 }
 
