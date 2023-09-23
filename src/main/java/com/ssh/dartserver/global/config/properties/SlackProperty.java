@@ -18,6 +18,5 @@ public class SlackProperty {
     public static class Channels {
         private final String notification;
         private final String idCardVerification;
-        private final String inviteMessage;
     }
 }

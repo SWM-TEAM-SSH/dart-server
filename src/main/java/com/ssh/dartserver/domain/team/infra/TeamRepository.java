@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface TeamRepository extends JpaRepository<Team, Long>, TeamRepositoryCustom {
+public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findByTeamUsersCombinationHash(TeamUsersCombinationHash teamUsersCombinationHashValue);
 
     @Query("select t from Team t where concat('-', t.teamUsersCombinationHash.value, '-') like :userIdPattern " )
