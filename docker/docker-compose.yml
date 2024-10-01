@@ -14,7 +14,7 @@ services:
     container_name: dart-server-local
     build:
       context: ../
-      dockerfile: docker/Dockerfile
+      dockerfile: ../Dockerfile
     depends_on:
       - dart-db-local
     restart: always
